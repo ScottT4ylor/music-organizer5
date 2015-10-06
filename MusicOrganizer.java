@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * A class to hold details of audio tracks.
@@ -15,6 +16,8 @@ public class MusicOrganizer
     private MusicPlayer player;
     // A reader that can read music files and load them as tracks.
     private TrackReader reader;
+    private Random random;
+    private ArrayList<Track> playedTracks;
 
     /**
      * Create a MusicOrganizer
@@ -27,6 +30,7 @@ public class MusicOrganizer
         readLibrary("audio");
         System.out.println("Music library loaded. " + getNumberOfTracks() + " tracks.");
         System.out.println();
+        random = new Random();
     }
     
     /**
@@ -53,6 +57,7 @@ public class MusicOrganizer
      */
     public void playTrack(int index)
     {
+        stopPlaying();
         if(indexValid(index)) {
             Track track = tracks.get(index);
             player.startPlaying(track.getFilename());
@@ -75,9 +80,12 @@ public class MusicOrganizer
      */
     public void listTrack(int index)
     {
-        System.out.print("Track " + index + ": ");
-        Track track = tracks.get(index);
-        System.out.println(track.getDetails());
+        if (indexValid(index))
+        {
+            System.out.print("Track " + index + ": ");
+            Track track = tracks.get(index);
+            System.out.println(track.getDetails());
+        }
     }
     
     /**
@@ -123,7 +131,7 @@ public class MusicOrganizer
     public void playFirst()
     {
         if(tracks.size() > 0) {
-            player.startPlaying(tracks.get(0).getFilename());
+            playTrack(0);
         }
     }
     
@@ -169,5 +177,30 @@ public class MusicOrganizer
         for(Track track : tempTracks) {
             addTrack(track);
         }
+    }
+    
+    public void playRandomTrack()
+    {
+        int chance = random.nextInt(getNumberOfTracks());
+        playTrack(chance);
+    }
+    
+    public void playAllTracksAtRandom()
+    {
+        playedTracks = new ArrayList<Track>();
+        int chance = random.nextInt(getNumberOfTracks());
+        if (playedTracks.size() == getNumberOfTracks())
+        {
+            while(playedTracks.size() > 0)
+            {
+                playedTracks.remove(0);
+            }
+        }
+        while (playedTracks.contains(tracks.get(chance)));
+        {
+            chance = random.nextInt(getNumberOfTracks());
+        }
+        playedTracks.add(tracks.get(chance));
+        playTrack(chance);
     }
 }
